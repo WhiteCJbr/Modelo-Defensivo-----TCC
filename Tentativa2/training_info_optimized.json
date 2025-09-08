@@ -1,0 +1,92 @@
+{
+  "timestamp": "2025-09-08T13:23:58.201097",
+  "version": "optimized_v2.0",
+  "dataset_shape": [
+    1664,
+    3
+  ],
+  "processed_shape": [
+    1664,
+    25
+  ],
+  "target_column": "binary_class",
+  "classes": [
+    "Benign",
+    "Spyware"
+  ],
+  "metrics": {
+    "accuracy": 0.6276276276276276,
+    "precision": 0.6292581609914553,
+    "recall": 0.6276276276276276,
+    "f1_score": 0.6265973749518053,
+    "auc": 0.6607748358704278,
+    "cv_accuracy_mean": 0.6228492579764017,
+    "cv_accuracy_std": 0.01527231122879253,
+    "cv_f1_mean": 0.622394019600345,
+    "cv_f1_std": 0.015529375875278414
+  },
+  "improvements": {
+    "advanced_preprocessing": true,
+    "feature_engineering": true,
+    "intelligent_balancing": true,
+    "ensemble_optimization": true,
+    "comprehensive_validation": true
+  },
+  "config_used": {
+    "vectorization": {
+      "method": "tfidf",
+      "max_features": 5000,
+      "ngram_range": [
+        1,
+        3
+      ],
+      "min_df": 1,
+      "max_df": 0.9,
+      "analyzer": "word"
+    },
+    "feature_selection": {
+      "method": "mutual_info",
+      "k_best": 500,
+      "threshold": "median"
+    },
+    "dimensionality_reduction": {
+      "method": "pca",
+      "n_components": 0.9,
+      "random_state": 42
+    },
+    "balancing": {
+      "method": "smote",
+      "random_state": 42,
+      "k_neighbors": 3
+    },
+    "random_forest": {
+      "n_estimators": 200,
+      "max_depth": 10,
+      "min_samples_split": 10,
+      "min_samples_leaf": 5,
+      "criterion": "gini",
+      "max_features": "sqrt",
+      "random_state": 42,
+      "n_jobs": -1,
+      "class_weight": "balanced"
+    },
+    "xgboost": {
+      "n_estimators": 150,
+      "max_depth": 4,
+      "learning_rate": 0.05,
+      "subsample": 0.8,
+      "colsample_bytree": 0.8,
+      "reg_alpha": 0.1,
+      "reg_lambda": 0.1,
+      "random_state": 42,
+      "scale_pos_weight": 0.9984984984984985
+    },
+    "logistic_regression": {
+      "C": 1.0,
+      "penalty": "l2",
+      "solver": "liblinear",
+      "random_state": 42,
+      "class_weight": "balanced"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "timestamp": "2025-09-08T13:04:27.088716",
+  "dataset_shape": [
+    1664,
+    2
+  ],
+  "processed_shape": [
+    1664,
+    260
+  ],
+  "target_column": "malware_type",
+  "classes": [
+    "Benign",
+    "Spyware"
+  ],
+  "accuracy": 0.5945945945945946,
+  "auc": 0.6243957867397735,
+  "cv_mean": 0.5837655937596801,
+  "cv_std": 0.02574037889521814
+}

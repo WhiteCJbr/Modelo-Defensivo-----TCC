@@ -1,0 +1,77 @@
+# Ignore system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Ignore Python cache and virtual environments
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+env/
+venv/
+.venv/
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+*.swp
+*.bak
+
+# Ignore compiled files
+*.exe
+*.dll
+*.so
+*.out
+*.o
+*.a
+
+# Ignore large data files
+.\ColetaData\benign_data_simple\benign_api_dataset_20250908_105906.csv
+*.tsv
+*.dat
+*.db
+*.sqlite
+*.h5
+*.tar
+*.tar.gz
+*.rar
+*.7z
+*.txt
+
+# Ignore images and media (if not needed in repo)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.mp4
+*.mp3
+*.wav
+
+# Ignore VSCode and IDE settings
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Ignore OneDrive sync files
+~$*
+
+# Ignore node modules (if using Node.js)
+node_modules/
+
+# Ignore build and dist folders
+build/
+dist/
+*.egg-info/
+
+# Ignore personal notebooks or configs
+*.env
+.env.*
+
+# Ignore backup files
+*~

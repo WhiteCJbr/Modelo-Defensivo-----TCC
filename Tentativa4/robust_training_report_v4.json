@@ -1,0 +1,158 @@
+{
+  "timestamp": "2025-09-08T14:51:54.393893",
+  "version": "robust_v4.0_corrected",
+  "dataset_info": {
+    "original_shape": [
+      800,
+      3
+    ],
+    "processed_shape": [
+      800,
+      50
+    ],
+    "train_samples": 440,
+    "test_samples": 200,
+    "holdout_samples": 160,
+    "total_features": 50
+  },
+  "target_column": "binary_class",
+  "classes": [
+    "Benign",
+    "Spyware"
+  ],
+  "metrics": {
+    "treino": {
+      "accuracy": 0.9977272727272727,
+      "precision": 0.997737556561086,
+      "recall": 0.9977272727272727,
+      "f1_score": 0.9977272609879183,
+      "auc": 1.0,
+      "samples": 440
+    },
+    "teste": {
+      "accuracy": 0.995,
+      "precision": 0.9950495049504952,
+      "recall": 0.995,
+      "f1_score": 0.9949998749968749,
+      "auc": 1.0,
+      "samples": 200
+    },
+    "holdout": {
+      "accuracy": 0.99375,
+      "precision": 0.9938271604938272,
+      "recall": 0.99375,
+      "f1_score": 0.9937497558498378,
+      "auc": 1.0,
+      "samples": 160
+    },
+    "cross_validation": {
+      "mean": 0.9954545454545455,
+      "std": 0.005567022142689036,
+      "scores": [
+        1.0,
+        1.0,
+        0.9886363636363636,
+        1.0,
+        0.9886363636363636
+      ]
+    }
+  },
+  "overfitting_analysis": {
+    "train_test_gap": 0.0027272727272726893,
+    "train_holdout_gap": 0.003977272727272663,
+    "overfitting_status": "EXCELENTE",
+    "generalization_quality": "good"
+  },
+  "improvements_implemented": {
+    "conservative_configuration": true,
+    "debug_pipeline": true,
+    "rigorous_validation": true,
+    "real_benign_data": true,
+    "three_set_validation": true,
+    "overfitting_prevention": true
+  },
+  "config_used": {
+    "vectorization": {
+      "method": "tfidf",
+      "max_features": 1000,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "min_df": 2,
+      "max_df": 0.95,
+      "analyzer": "word"
+    },
+    "feature_selection": {
+      "method": "mutual_info",
+      "k_best": 50,
+      "threshold": null
+    },
+    "dimensionality_reduction": {
+      "method": "none",
+      "n_components": 0.95,
+      "random_state": 42
+    },
+    "balancing": {
+      "method": "none",
+      "random_state": 42,
+      "k_neighbors": 5
+    },
+    "random_forest": {
+      "n_estimators": 50,
+      "max_depth": 5,
+      "min_samples_split": 20,
+      "min_samples_leaf": 10,
+      "criterion": "gini",
+      "max_features": "sqrt",
+      "random_state": 42,
+      "n_jobs": -1,
+      "class_weight": null
+    },
+    "xgboost": {
+      "n_estimators": 30,
+      "max_depth": 3,
+      "learning_rate": 0.1,
+      "subsample": 0.8,
+      "colsample_bytree": 0.8,
+      "reg_alpha": 0.3,
+      "reg_lambda": 0.3,
+      "random_state": 42,
+      "scale_pos_weight": 1
+    }
+  },
+  "pipeline_debug": {
+    "original_shape": [
+      800,
+      1
+    ],
+    "original_classes": "[0 1]",
+    "steps": [
+      {
+        "step": "vectorization",
+        "input_shape": [
+          800,
+          1
+        ],
+        "output_shape": [
+          800,
+          1000
+        ],
+        "features_created": 1000
+      },
+      {
+        "step": "feature_selection",
+        "method": "mutual_info",
+        "features_before": 1000,
+        "features_after": 50,
+        "reduction_ratio": 0.05
+      }
+    ]
+  },
+  "recommendations": {
+    "production_ready": true,
+    "monitoring_required": true,
+    "further_data_collection": false,
+    "model_complexity_adjustment": false
+  }
+}
