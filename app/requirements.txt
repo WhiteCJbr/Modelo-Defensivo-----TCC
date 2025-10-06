@@ -1,0 +1,4 @@
+joblib
+psutil
+pywin32
+requests

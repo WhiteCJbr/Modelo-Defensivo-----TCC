@@ -41,7 +41,6 @@ venv/
 *.tar.gz
 *.rar
 *.7z
-*.txt
 
 # Ignore images and media (if not needed in repo)
 *.png
