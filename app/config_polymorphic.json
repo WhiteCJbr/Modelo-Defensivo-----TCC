@@ -1,0 +1,66 @@
+{
+  "detection_threshold": 0.45,
+  "analysis_interval": 3,
+  "min_api_calls": 3,
+  "quarantine_enabled": true,
+  "save_evidence": true,
+  "verbose_logging": true,
+  "alert_webhook": null,
+  
+  "polymorphic_detection": {
+    "memory_threshold": 2,
+    "network_threshold": 3,
+    "injection_threshold": 1,
+    "obfuscation_threshold": 2,
+    "ai_keywords": [
+      "openai", "anthropic", "claude", "gpt", "api", "chat", "generate",
+      "completions", "embeddings", "davinci", "curie", "babbage", "ada",
+      "text-davinci", "gpt-3.5", "gpt-4", "chatgpt", "copilot"
+    ]
+  },
+  
+  "sysmon_events": [1, 2, 3, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 23, 25, 26, 27, 29],
+  
+  "whitelist_processes": [
+    "svchost.exe", "System", "smss.exe", "csrss.exe", 
+    "wininit.exe", "services.exe", "lsass.exe", "winlogon.exe",
+    "dwm.exe", "explorer.exe", "conhost.exe", "dllhost.exe",
+    "spoolsv.exe", "RuntimeBroker.exe", "SearchIndexer.exe",
+    "WmiPrvSE.exe", "audiodg.exe", "fontdrvhost.exe"
+  ],
+  
+  "critical_processes": [
+    "lsass.exe", "winlogon.exe", "csrss.exe", "services.exe",
+    "smss.exe", "wininit.exe", "kernel32.dll", "ntdll.dll"
+  ],
+  
+  "suspicious_extensions": [
+    ".exe", ".dll", ".scr", ".bat", ".ps1", ".vbs", ".com",
+    ".pif", ".cmd", ".msi", ".jar", ".hta", ".wsf", ".wsc"
+  ],
+  
+  "suspicious_directories": [
+    "temp", "tmp", "appdata\\local\\temp", "windows\\temp",
+    "programdata", "users\\public", "$recycle.bin", "system32"
+  ],
+  
+  "ai_domains": [
+    "openai.com", "api.openai.com", "chat.openai.com",
+    "anthropic.com", "api.anthropic.com", "claude.ai",
+    "googleapis.com", "api.google.com", "gemini.google.com",
+    "azure.com", "api.azure.com", "openai.azure.com",
+    "huggingface.co", "api.huggingface.co",
+    "cohere.ai", "api.cohere.ai",
+    "replicate.com", "api.replicate.com"
+  ],
+  
+  "memory_injection_patterns": [
+    "VirtualAlloc", "VirtualAllocEx", "WriteProcessMemory",
+    "CreateRemoteThread", "SetWindowsHookEx", "NtMapViewOfSection",
+    "RtlCreateUserThread", "NtCreateThreadEx", "QueueUserAPC"
+  ],
+  
+  "network_suspicious_ports": [
+    "80", "443", "8080", "8443", "3000", "5000", "8000", "9000"
+  ]
+}
