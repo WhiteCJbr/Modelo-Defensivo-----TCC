@@ -1,0 +1,35 @@
+{
+    "detection_threshold": 0.7,
+    "analysis_interval": 5,
+    "min_api_calls": 50,
+    "discord_webhook": "https://discord.com/api/webhooks/YOUR_WEBHOOK_URL_HERE",
+    "whitelist_processes": [
+        "svchost.exe",
+        "System",
+        "smss.exe",
+        "csrss.exe",
+        "wininit.exe",
+        "services.exe",
+        "lsass.exe",
+        "winlogon.exe",
+        "dwm.exe",
+        "explorer.exe",
+        "conhost.exe",
+        "dllhost.exe",
+        "python.exe",
+        "code.exe",
+        "chrome.exe",
+        "firefox.exe"
+    ],
+    "suspicious_extensions": [
+        ".exe",
+        ".dll",
+        ".scr",
+        ".bat",
+        ".ps1"
+    ],
+    "max_concurrent_analysis": 10,
+    "quarantine_detected": false,
+    "auto_terminate": false,
+    "detailed_logging": true
+}
