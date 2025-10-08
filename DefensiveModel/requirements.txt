@@ -1,0 +1,102 @@
+# MODELO DEFENSIVO - SISTEMA DE DETECÇÃO DE MALWARE POLIMÓRFICO
+# Requirements.txt para instalação de dependências
+# Instalar com: pip install -r requirements.txt
+
+# ============================================
+# MACHINE LEARNING E ANÁLISE DE DADOS
+# ============================================
+scikit-learn>=1.3.0          # Random Forest, TF-IDF, métricas de avaliação
+numpy>=1.24.0                # Operações numéricas e arrays
+pandas>=2.0.0                # Manipulação e análise de dados CSV
+joblib>=1.3.0                # Serialização eficiente de modelos ML
+
+# ============================================
+# MONITORAMENTO DE SISTEMA
+# ============================================
+psutil>=5.9.0                # Monitoramento de processos, CPU, memória
+pywin32>=306                 # APIs do Windows (win32evtlog, win32con)
+
+# ============================================
+# COMUNICAÇÃO E ALERTAS
+# ============================================
+requests>=2.31.0             # HTTP requests para Discord webhooks
+urllib3>=2.0.0               # Backend para requests
+
+# ============================================
+# MANIPULAÇÃO DE ARQUIVOS E DADOS
+# ============================================
+pathlib2>=2.3.7             # Manipulação avançada de caminhos (Python <3.4)
+
+# ============================================
+# LOGGING E DEBUGGING
+# ============================================
+colorama>=0.4.6              # Cores no terminal para melhor visualização
+
+# ============================================
+# DESENVOLVIMENTO E TESTING (OPCIONAL)
+# ============================================
+pytest>=7.4.0               # Framework de testes
+pytest-cov>=4.1.0           # Cobertura de testes
+flake8>=6.0.0                # Linting de código
+black>=23.0.0                # Formatação automática de código
+
+# ============================================
+# SEGURANÇA E CRIPTOGRAFIA
+# ============================================
+cryptography>=41.0.0        # Funções criptográficas para hashing
+hashlib2>=1.0.1             # Hashing adicional (se necessário)
+
+# ============================================
+# ANÁLISE DE MALWARE (OPCIONAL)
+# ============================================
+yara-python>=4.3.1          # Regras YARA para detecção de malware
+pefile>=2023.2.7            # Análise de arquivos PE (executáveis Windows)
+
+# ============================================
+# VISUALIZAÇÃO E RELATÓRIOS (OPCIONAL)
+# ============================================
+matplotlib>=3.7.0           # Gráficos e visualizações
+seaborn>=0.12.0             # Visualizações estatísticas avançadas
+plotly>=5.15.0              # Gráficos interativos
+
+# ============================================
+# PROCESSAMENTO DE TEXTO
+# ============================================
+nltk>=3.8.1                 # Natural Language Toolkit para processamento de APIs
+regex>=2023.6.3             # Expressões regulares avançadas
+
+# ============================================
+# CONFIGURAÇÃO E AMBIENTE
+# ============================================
+python-dotenv>=1.0.0        # Gerenciamento de variáveis de ambiente
+configparser>=6.0.0         # Parsing de arquivos de configuração
+
+# ============================================
+# THREADING E CONCORRÊNCIA
+# ============================================
+threading2>=0.1.2           # Threading avançado (se necessário)
+
+# ============================================
+# MONITORAMENTO AVANÇADO (OPCIONAL)
+# ============================================
+wmi>=1.5.1                  # Windows Management Instrumentation
+pywinutils>=0.1.0           # Utilitários Windows adicionais
+
+# ============================================
+# VALIDAÇÃO E SCHEMAS
+# ============================================
+jsonschema>=4.19.0          # Validação de estruturas JSON
+marshmallow>=3.20.0         # Serialização/deserialização de dados
+
+# ============================================
+# PERFORMANCE E OTIMIZAÇÃO
+# ============================================
+cython>=3.0.0               # Otimização de performance (opcional)
+numba>=0.57.0               # JIT compilation para NumPy (opcional)
+
+# ============================================
+# COMPATIBILIDADE E UTILITÁRIOS
+# ============================================
+six>=1.16.0                 # Compatibilidade Python 2/3
+setuptools>=68.0.0          # Ferramentas de setup
+wheel>=0.41.0               # Formato de distribuição Python
