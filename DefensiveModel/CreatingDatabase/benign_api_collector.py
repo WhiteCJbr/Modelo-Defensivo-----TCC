@@ -111,10 +111,19 @@ class BenignAPICollector:
                     break
                 
                 try:
-                    # Parse do XML do evento
-                    xml_string = event.StringInserts[0] if event.StringInserts else ""
-                    if xml_string:
-                        yield self._parse_sysmon_event(xml_string, event.EventID)
+                    # Verificar se o evento tem dados XML válidos
+                    if hasattr(event, 'StringInserts') and event.StringInserts:
+                        xml_string = event.StringInserts[0]
+                        # Verificar se é XML válido antes do parse
+                        if xml_string and xml_string.strip().startswith('<'):
+                            yield self._parse_sysmon_event(xml_string, event.EventID)
+                        else:
+                            # Se não é XML válido, criar evento básico
+                            yield self._create_basic_event(event)
+                    else:
+                        # Fallback para evento básico
+                        yield self._create_basic_event(event)
+                        
                 except Exception as e:
                     if self.verbose:
                         self.logger.warning(f"Erro ao processar evento: {e}")
@@ -126,13 +135,45 @@ class BenignAPICollector:
             self.logger.error(f"Erro ao acessar eventos Sysmon: {e}")
             self.logger.info("Verifique se o Sysmon está instalado e configurado")
     
+    def _create_basic_event(self, event):
+        """
+        Criar evento básico quando XML não está disponível
+        """
+        try:
+            # Mapear ID do evento para API call
+            api_call = self.event_to_api.get(event.EventID, f"SysmonEvent{event.EventID}")
+            
+            return {
+                "api_call": api_call,
+                "process_id": str(event.EventID),
+                "process_name": "sysmon_process",
+                "timestamp": datetime.now(),
+                "additional_data": {
+                    "event_id": event.EventID,
+                    "source": "sysmon_basic"
+                }
+            }
+        except Exception as e:
+            self.logger.debug(f"Erro ao criar evento básico: {e}")
+            return None
+    
     def _parse_sysmon_event(self, xml_string, event_id):
         """
         Parse de evento Sysmon XML
         Extrai informações relevantes para API calls
         """
         try:
-            root = ET.fromstring(xml_string)
+            # Validar XML antes do parse
+            if not xml_string or not xml_string.strip():
+                return None
+            
+            # Tentar fazer parse do XML
+            try:
+                root = ET.fromstring(xml_string)
+            except ET.ParseError as e:
+                self.logger.debug(f"Erro ao fazer parse do XML: {e}")
+                # Tentar parse com fallback
+                return self._parse_xml_fallback(xml_string, event_id)
             
             event_data = {}
             for data in root.findall(".//Data"):
@@ -148,12 +189,33 @@ class BenignAPICollector:
                 "process_id": event_data.get("ProcessId", ""),
                 "process_name": event_data.get("Image", "").split("\\")[-1],
                 "timestamp": datetime.now(),
-                "details": event_data
+                "additional_data": event_data
             }
             
         except Exception as e:
-            if self.verbose:
-                self.logger.warning(f"Erro ao fazer parse do XML: {e}")
+            self.logger.debug(f"Erro geral no parse XML: {e}")
+            return None
+    
+    def _parse_xml_fallback(self, xml_string, event_id):
+        """
+        Parse fallback quando XML principal falha
+        """
+        try:
+            # Tentar extrair informações básicas com regex se necessário
+            api_call = self.event_to_api.get(event_id, f"SysmonEvent{event_id}")
+            
+            return {
+                "api_call": api_call,
+                "process_id": str(event_id),
+                "process_name": "fallback_process",
+                "timestamp": datetime.now(),
+                "additional_data": {
+                    "raw_xml": xml_string[:100],  # Primeiros 100 chars para debug
+                    "source": "xml_fallback"
+                }
+            }
+        except Exception as e:
+            self.logger.debug(f"Erro no fallback XML: {e}")
             return None
     
     def _monitor_api_calls_alternative(self):
