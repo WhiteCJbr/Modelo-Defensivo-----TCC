@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Sysmon schemaversion="4.90">
+  <!-- 
+  CONFIGURACAO OTIMIZADA PARA DETECCAO DE MALWARE POLIMÓRFICO
+  Especialmente projetada para capturar:
+  - Comunicacao com APIs de IA
+  - Injecao de código em memória  
+  - Execucao dinâmica de código
+  - Manipulacao de processos
+  -->
+  
+  <HashAlgorithms>md5,sha256,imphash</HashAlgorithms>
+  <CheckRevocation/>
+  <ArchiveDirectory>C:\Sysmon\Archive</ArchiveDirectory>
+  
+  <EventFiltering>
+    
+    <!-- Event ID 1: Process Creation - Capturar TODOS os processos -->
+    <RuleGroup name="" groupRelation="or">
+      <ProcessCreate onmatch="exclude">
+        <!-- Excluir apenas processos muito comuns e seguros -->
+        <Image condition="is">C:\Windows\System32\conhost.exe</Image>
+        <Image condition="is">C:\Windows\System32\dllhost.exe</Image>
+        <ParentImage condition="is">C:\Windows\System32\services.exe</ParentImage>
+        <ParentImage condition="is">C:\Windows\System32\lsass.exe</ParentImage>
+        <!-- Manter logging minimo do proprio sistema -->
+        <Image condition="is">C:\Windows\System32\taskhostw.exe</Image>
+        <Image condition="is">C:\Windows\System32\dwm.exe</Image>
+      </ProcessCreate>
+    </RuleGroup>
+    
+    <!-- Event ID 2: File creation time changed - Importante para evasao -->
+    <RuleGroup name="" groupRelation="or">
+      <FileCreateTime onmatch="include">
+        <TargetFilename condition="end with">.exe</TargetFilename>
+        <TargetFilename condition="end with">.dll</TargetFilename>
+        <TargetFilename condition="end with">.sys</TargetFilename>
+        <TargetFilename condition="end with">.scr</TargetFilename>
+      </FileCreateTime>
+    </RuleGroup>
+    
+    <!-- Event ID 3: Network Connection - CRÍTICO para comunicacao IA -->
+    <RuleGroup name="" groupRelation="or">
+      <NetworkConnect onmatch="exclude">
+        <!-- Excluir apenas conexoes locais obvias -->
+        <DestinationIp condition="is">127.0.0.1</DestinationIp>
+        <DestinationIp condition="is">::1</DestinationIp>
+      </NetworkConnect>
+    </RuleGroup>
+    
+    <!-- Event ID 5: Process Termination - Para cleanup tracking -->
+    <RuleGroup name="" groupRelation="or">
+      <ProcessTerminate onmatch="exclude">
+        <Image condition="is">C:\Windows\System32\conhost.exe</Image>
+      </ProcessTerminate>
+    </RuleGroup>
+    
+    <!-- Event ID 6: Driver Loading - Crítico para rootkits -->
+    <RuleGroup name="" groupRelation="or">
+      <DriverLoad onmatch="exclude">
+        <Signed condition="is">true</Signed>
+      </DriverLoad>
+    </RuleGroup>
+    
+    <!-- Event ID 7: Image/DLL Loading - Importante para injecao e APIs -->
+    <RuleGroup name="" groupRelation="or">
+      <ImageLoad onmatch="include">
+        <!-- Capturar DLLs suspeitas e carregamento nao autorizado -->
+        <ImageLoaded condition="contains">temp</ImageLoaded>
+        <ImageLoaded condition="contains">appdata</ImageLoaded>
+        <ImageLoaded condition="end with">.dll</ImageLoaded>
+        <Signed condition="is">false</Signed>
+        <!-- APIs criticas para deteccao -->
+        <ImageLoaded condition="contains">kernel32</ImageLoaded>
+        <ImageLoaded condition="contains">ntdll</ImageLoaded>
+        <ImageLoaded condition="contains">user32</ImageLoaded>
+        <ImageLoaded condition="contains">advapi32</ImageLoaded>
+        <ImageLoaded condition="contains">wininet</ImageLoaded>
+        <ImageLoaded condition="contains">ws2_32</ImageLoaded>
+        <ImageLoaded condition="contains">psapi</ImageLoaded>
+      </ImageLoad>
+    </RuleGroup>
+    
+    <!-- Event ID 8: CreateRemoteThread - CRÍTICO para injecao de código -->
+    <RuleGroup name="" groupRelation="or">
+      <CreateRemoteThread onmatch="exclude">
+        <!-- Permitir apenas algumas excecoes conhecidas -->
+        <SourceImage condition="is">C:\Windows\System32\wbem\WmiPrvSE.exe</SourceImage>
+        <SourceImage condition="is">C:\Windows\System32\svchost.exe</SourceImage>
+        <TargetImage condition="is">C:\Windows\System32\svchost.exe</TargetImage>
+      </CreateRemoteThread>
+    </RuleGroup>
+    
+    <!-- Event ID 9: RawAccessRead - Deteccao de acesso direto ao disco -->
+    <RuleGroup name="" groupRelation="or">
+      <RawAccessRead onmatch="exclude">
+        <Image condition="is">C:\Windows\System32\svchost.exe</Image>
+        <Image condition="is">C:\Windows\System32\defrag.exe</Image>
+      </RawAccessRead>
+    </RuleGroup>
+    
+    <!-- Event ID 10: Process Access - Acesso a processos críticos -->
+    <RuleGroup name="" groupRelation="or">
+      <ProcessAccess onmatch="include">
+        <!-- Monitorar acesso a processos críticos -->
+        <TargetImage condition="is">C:\Windows\System32\lsass.exe</TargetImage>
+        <TargetImage condition="is">C:\Windows\System32\winlogon.exe</TargetImage>
+        <TargetImage condition="is">C:\Windows\System32\csrss.exe</TargetImage>
+        <TargetImage condition="is">C:\Windows\System32\services.exe</TargetImage>
+        <!-- Tambem processos do próprio detector -->
+        <TargetImage condition="end with">python.exe</TargetImage>
+        <TargetImage condition="end with">pythonw.exe</TargetImage>
+        <!-- Processos de navegadores e apps comuns para dados benignos -->
+        <TargetImage condition="end with">chrome.exe</TargetImage>
+        <TargetImage condition="end with">firefox.exe</TargetImage>
+        <TargetImage condition="end with">notepad.exe</TargetImage>
+        <TargetImage condition="end with">explorer.exe</TargetImage>
+        <!-- Malware especifico -->
+        <TargetImage condition="end with">malwaretcc.exe</TargetImage>
+        <SourceImage condition="end with">malwaretcc.exe</SourceImage>
+      </ProcessAccess>
+    </RuleGroup>
+    
+    <!-- Event ID 11: File Creation - Arquivos suspeitos -->
+    <RuleGroup name="" groupRelation="or">
+      <FileCreate onmatch="include">
+        <!-- Executaveis em locais suspeitos -->
+        <TargetFilename condition="contains">temp</TargetFilename>
+        <TargetFilename condition="contains">appdata</TargetFilename>
+        <TargetFilename condition="contains">programdata</TargetFilename>
+        <TargetFilename condition="end with">.exe</TargetFilename>
+        <TargetFilename condition="end with">.dll</TargetFilename>
+        <TargetFilename condition="end with">.scr</TargetFilename>
+        <TargetFilename condition="end with">.bat</TargetFilename>
+        <TargetFilename condition="end with">.ps1</TargetFilename>
+        <TargetFilename condition="end with">.vbs</TargetFilename>
+        <TargetFilename condition="end with">.py</TargetFilename>
+        <!-- Arquivos especificos do malware -->
+        <Image condition="end with">malwaretcc.exe</Image>
+        <!-- Arquivos de dados benignos para baseline -->
+        <Image condition="end with">notepad.exe</Image>
+        <Image condition="end with">wordpad.exe</Image>
+        <Image condition="end with">calc.exe</Image>
+      </FileCreate>
+    </RuleGroup>
+    
+    <!-- Event ID 12/13/14: Registry Events - Persistencia -->
+    <RuleGroup name="" groupRelation="or">
+      <RegistryEvent onmatch="include">
+        <!-- Chaves de inicializacao -->
+        <TargetObject condition="contains">CurrentVersion\Run</TargetObject>
+        <TargetObject condition="contains">CurrentVersion\RunOnce</TargetObject>
+        <TargetObject condition="contains">CurrentVersion\RunServices</TargetObject>
+        <TargetObject condition="contains">Winlogon</TargetObject>
+        <TargetObject condition="contains">Userinit</TargetObject>
+        <TargetObject condition="contains">Shell</TargetObject>
+        <TargetObject condition="contains">Explorer\Run</TargetObject>
+        <!-- Configuracoes de servicos -->
+        <TargetObject condition="contains">Services\</TargetObject>
+        <!-- Configuracoes de políticas -->
+        <TargetObject condition="contains">Policies\</TargetObject>
+        <!-- Chaves específicas para spyware e keyloggers -->
+        <TargetObject condition="contains">Windows\CurrentVersion\Explorer\Advanced</TargetObject>
+        <TargetObject condition="contains">Control Panel\Keyboard</TargetObject>
+        <TargetObject condition="contains">Control Panel\Mouse</TargetObject>
+        <!-- Monitorar alteracoes do malware especifico -->
+        <Image condition="end with">malwaretcc.exe</Image>
+      </RegistryEvent>
+    </RuleGroup>
+    
+    <!-- Event ID 15: File Stream Creation -->
+    <RuleGroup name="" groupRelation="or">
+      <FileCreateStreamHash onmatch="include">
+        <TargetFilename condition="end with">.exe</TargetFilename>
+        <TargetFilename condition="end with">.dll</TargetFilename>
+      </FileCreateStreamHash>
+    </RuleGroup>
+    
+    <!-- Event ID 17/18: Named Pipes - Comunicacao inter-processo -->
+    <RuleGroup name="" groupRelation="or">
+      <PipeEvent onmatch="exclude">
+        <PipeName condition="contains">wkssvc</PipeName>
+        <PipeName condition="contains">spoolss</PipeName>
+        <PipeName condition="contains">srvsvc</PipeName>
+      </PipeEvent>
+    </RuleGroup>
+    
+    <!-- Event ID 19/20/21: WMI Events - Persistencia e execucao -->
+    <RuleGroup name="" groupRelation="or">
+      <WmiEvent onmatch="include">
+        <!-- Capturar TODOS os eventos WMI - muito usado por malware -->
+      </WmiEvent>
+    </RuleGroup>
+    
+    <!-- Event ID 22: DNS Queries - CRÍTICO para comunicacao IA -->
+    <RuleGroup name="" groupRelation="or">
+      <DnsQuery onmatch="include">
+        <!-- Capturar consultas para domínios de IA -->
+        <QueryName condition="contains">openai</QueryName>
+        <QueryName condition="contains">anthropic</QueryName>
+        <QueryName condition="contains">claude</QueryName>
+        <QueryName condition="contains">googleapis</QueryName>
+        <QueryName condition="contains">azure</QueryName>
+        <QueryName condition="contains">api</QueryName>
+        <QueryName condition="contains">huggingface</QueryName>
+        <QueryName condition="contains">cohere</QueryName>
+        <QueryName condition="contains">replicate</QueryName>
+        <!-- Tambem domínios suspeitos gerais -->
+        <QueryName condition="contains">temp</QueryName>
+        <QueryName condition="contains">dyndns</QueryName>
+        <QueryName condition="contains">ngrok</QueryName>
+        <!-- Capturar todas as queries do malware especifico -->
+        <Image condition="end with">malwaretcc.exe</Image>
+        <!-- Apps benignos comuns para baseline -->
+        <Image condition="end with">chrome.exe</Image>
+        <Image condition="end with">firefox.exe</Image>
+        <Image condition="end with">notepad.exe</Image>
+      </DnsQuery>
+    </RuleGroup>
+    
+    <!-- Event ID 23: File Deletion -->
+    <RuleGroup name="" groupRelation="or">
+      <FileDelete onmatch="include">
+        <TargetFilename condition="contains">temp</TargetFilename>
+        <TargetFilename condition="end with">.exe</TargetFilename>
+        <TargetFilename condition="end with">.dll</TargetFilename>
+        <TargetFilename condition="end with">.log</TargetFilename>
+      </FileDelete>
+    </RuleGroup>
+    
+    <!-- Event ID 24: Clipboard Changes -->
+    <RuleGroup name="" groupRelation="or">
+      <ClipboardChange onmatch="include">
+        <!-- Capturar mudancas suspeitas no clipboard -->
+      </ClipboardChange>
+    </RuleGroup>
+    
+    <!-- Event ID 25: Process Image Tampering -->
+    <RuleGroup name="" groupRelation="or">
+      <ProcessTampering onmatch="include">
+        <!-- CRÍTICO - qualquer manipulacao de processo -->
+      </ProcessTampering>
+    </RuleGroup>
+    
+    <!-- Event ID 26: File Delete Logging -->
+    <RuleGroup name="" groupRelation="or">
+      <FileDeleteDetected onmatch="include">
+        <TargetFilename condition="end with">.exe</TargetFilename>
+        <TargetFilename condition="end with">.dll</TargetFilename>
+      </FileDeleteDetected>
+    </RuleGroup>
+    
+    <!-- Event ID 27: File Block Executable -->
+    <RuleGroup name="" groupRelation="or">
+      <FileBlockExecutable onmatch="include">
+        <!-- Capturar tentativas de execucao bloqueadas -->
+      </FileBlockExecutable>
+    </RuleGroup>
+    
+    <!-- Event ID 28: File Block Shredding -->
+    <RuleGroup name="" groupRelation="or">
+      <FileBlockShredding onmatch="include">
+        <!-- Capturar tentativas de destruicao de evidencia -->
+      </FileBlockShredding>
+    </RuleGroup>
+    
+    <!-- Event ID 29: File Executable Detected -->
+    <RuleGroup name="" groupRelation="or">
+      <FileExecutableDetected onmatch="include">
+        <!-- Novos executaveis detectados -->
+      </FileExecutableDetected>
+    </RuleGroup>
+    
+    <!-- EVENTO PERSONALIZADO: API Calls Capture - Para dados benignos e malware -->
+    <!-- Esta secao sera usada pelos coletores para identificar processos alvo -->
+    <RuleGroup name="ApiCaptureTargets" groupRelation="or">
+      <ProcessCreate onmatch="include">
+        <!-- Aplicacoes benignas para coleta baseline -->
+        <Image condition="end with">notepad.exe</Image>
+        <Image condition="end with">calc.exe</Image>
+        <Image condition="end with">mspaint.exe</Image>
+        <Image condition="end with">wordpad.exe</Image>
+        <Image condition="end with">chrome.exe</Image>
+        <Image condition="end with">firefox.exe</Image>
+        <Image condition="end with">explorer.exe</Image>
+        <!-- Malware especifico -->
+        <Image condition="end with">malwaretcc.exe</Image>
+        <Image condition="contains">malware</Image>
+        <!-- Processos filhos do malware -->
+        <ParentImage condition="end with">malwaretcc.exe</ParentImage>
+      </ProcessCreate>
+    </RuleGroup>
+    
+  </EventFiltering>
+</Sysmon>
