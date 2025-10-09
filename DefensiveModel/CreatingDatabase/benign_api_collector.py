@@ -406,6 +406,35 @@ class BenignAPICollector:
         print(f"   Arquivo CSV: {csv_file.name}")
         print(f"   Estatísticas: {stats_file.name}")
     
+    def _generate_output_filename(self):
+        """Gerar nome do arquivo de saída com timestamp"""
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"benign_api_dataset_{timestamp}.csv"
+        return self.output_dir / filename
+    
+    def _save_to_csv(self, output_file):
+        """Salvar dados coletados em formato CSV"""
+        try:
+            with open(output_file, 'w', newline='', encoding='utf-8') as csvfile:
+                writer = csv.writer(csvfile)
+                
+                # Cabeçalho compatível com mal-api-2019
+                writer.writerow(['Process', 'API', 'Label'])
+                
+                # Escrever dados dos processos
+                for pid, api_calls in self.process_api_calls.items():
+                    if len(api_calls) > 0:
+                        process_name = self.process_info.get(pid, {}).get('name', 'unknown_process')
+                        api_string = ' '.join(api_calls)
+                        writer.writerow([process_name, api_string, 'Benign'])
+                
+                self.logger.info(f"Dados salvos em: {output_file}")
+                return True
+                
+        except Exception as e:
+            self.logger.error(f"Erro ao salvar CSV: {e}")
+            return False
+    
     def stop_collection(self):
         """Parar coleta manualmente"""
         self.collecting = False

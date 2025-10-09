@@ -83,9 +83,9 @@ def test_csv_output(collector):
         # Se há dados coletados, gerar CSV
         if collector.process_api_calls:
             output_file = collector._generate_output_filename()
-            collector._save_to_csv(output_file)
+            success = collector._save_to_csv(output_file)
             
-            if Path(output_file).exists():
+            if success and Path(output_file).exists():
                 file_size = Path(output_file).stat().st_size
                 print(f"✅ CSV gerado - {output_file} ({file_size} bytes)")
                 return True
@@ -93,8 +93,31 @@ def test_csv_output(collector):
                 print("❌ Arquivo CSV não foi criado")
                 return False
         else:
-            print("⚠️ Não há dados para gerar CSV")
-            return True
+            # Se não há dados, criar dados de teste para validar o método
+            print("⚠️ Não há dados reais, criando dados de teste...")
+            
+            # Adicionar dados de teste
+            collector.process_api_calls[9999] = ['test_api_1', 'test_api_2', 'test_api_3']
+            collector.process_info[9999] = {'name': 'test_process.exe'}
+            
+            output_file = collector._generate_output_filename()
+            success = collector._save_to_csv(output_file)
+            
+            if success and Path(output_file).exists():
+                file_size = Path(output_file).stat().st_size
+                print(f"✅ CSV de teste gerado - {output_file} ({file_size} bytes)")
+                
+                # Limpar dados de teste
+                del collector.process_api_calls[9999]
+                del collector.process_info[9999]
+                
+                # Remover arquivo de teste
+                Path(output_file).unlink()
+                print("🧹 Dados de teste removidos")
+                return True
+            else:
+                print("❌ Falha na geração de CSV de teste")
+                return False
             
     except Exception as e:
         print(f"❌ Erro na geração de CSV: {e}")
